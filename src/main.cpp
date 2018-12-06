@@ -58,8 +58,6 @@ main(int argc, char **argv)
 	const char *host = --argc ? *++argv : "localhost";
 	const char *port = --argc ? *++argv : "5000";
 
-printf("%s: %s\n", host, port);
-
 	setenv("TZ", "UTC", 1);
 
 	BoltConnector *connector = db_up(argc, argv);
