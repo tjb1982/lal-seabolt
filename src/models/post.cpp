@@ -103,7 +103,7 @@ model_insert_post(BoltConnector *connector, json& j, Post& created)
 
 	while (BoltConnection_fetch(connection, pull) > 0) {
 		const struct BoltValue *field_values = BoltConnection_field_values(connection);
-		char id[37];
+		char id[UUID_LENGTH];
 		value = BoltList_value(field_values, 0);
 		BoltValue_to_string(value, id, UUID_LENGTH, connection);
 
@@ -168,7 +168,7 @@ model_get_all_posts(BoltConnector *connector, vector<Post>& post_vector)
 		const struct BoltValue *field_values = BoltConnection_field_values(connection);
 		struct BoltValue *value;
 
-		char id[37];
+		char id[UUID_LENGTH];
 		value = BoltList_value(field_values, 0);
 		BoltValue_to_string(value, id, UUID_LENGTH, connection);
 
