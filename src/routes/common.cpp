@@ -19,27 +19,53 @@ respond(int sock, struct lal_response *resp) {
 
 
 int
-respond_500 (int sock, const char *msg) {
-	struct lal_response *resp = lal_create_response("500 Bad");
+respond_json(int sock, const char *codemsg, const char *msg)
+{
+	struct lal_response *resp = lal_create_response(codemsg);
 	json j = {
 		{"message", msg}
 	};
 	std::string dump = j.dump();
 	lal_nappend_to_body(resp->body,
-		(const uint8_t *)dump.c_str(), dump.size());
-	respond(sock, resp);
+		(const uint8_t *) dump.c_str(), dump.length());
+	return respond(sock, resp);
+}
+
+
+int
+respond_500 (int sock, const char *msg) {
+	respond_json(sock, "500 Internal Server Error", msg);
 	return 1;
 }
 
 
 int
-post_middleware(int sock, struct lal_request *request, int *clptr) {
+common_middleware(int sock, struct lal_request *request)
+{
+	struct lal_entry *header;
 
+	if (!(header = lal_get_header(request, "Accept"))) {
+		return respond_500(sock, "Accept header was not found.");
+	}
+	char accept[header->vallen + 1];
+	strncpy(accept, header->val, header->vallen);
+	log_warn(accept);
+	if (!strstr(accept, "*/*") && !strstr(accept, "application/json")) {
+		respond_json(sock, "406 Not Acceptable", "application/json must be acceptable.");
+		return 1;
+	}
+	return 0;
+}
+
+
+int
+post_middleware(int sock, struct lal_request *request, int *clptr)
+{
 	struct lal_entry *header;
 
 	// Get Content-Type header, value == application/json
 	if (!(header = lal_get_header(request, "Content-Type"))) {
-		return respond_500(sock, "Content-Type header was empty");
+		return respond_500(sock, "Content-Type header was empty.");
 	}
 	char content_type_str[header->vallen + 1];
 	strncpy(content_type_str, header->val, header->vallen);

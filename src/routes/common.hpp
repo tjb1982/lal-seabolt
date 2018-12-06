@@ -11,6 +11,9 @@ int
 respond(int sock, struct lal_response *resp);
 
 int
+common_middleware(int sock, struct lal_request *request);
+
+int
 post_middleware(int sock, struct lal_request *request, int *clptr);
 
 

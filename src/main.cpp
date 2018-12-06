@@ -15,6 +15,7 @@
 #include "bolt/values.h"
 
 #include "log.hpp"
+#include "utils.hpp"
 #include "routes/common.hpp"
 #include "routes/post.hpp"
 
@@ -22,11 +23,6 @@
 
 using namespace std;
 
-const char *
-getenv_or_default(const char *key, const char *default_value) {
-	const char *val = getenv(key);
-	return !val ? default_value : val;
-}
 
 BoltConnector *
 db_up(int argc, char **argv) {

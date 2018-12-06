@@ -87,8 +87,11 @@ route_insert_post(int sock, struct lal_request *request) {
 	json insert;
 	Post created;
 
-	// assert facts about headers and possibly respond 500 if error.
-	if (err = post_middleware(sock, request, &content_length)) { return err; }
+	// assert facts about headers and possibly respond if error.
+	if ((err = common_middleware(sock, request))) { return err; }
+
+	// assert post-specific facts and set content-length
+	if ((err = post_middleware(sock, request, &content_length))) { return err; }
 
 	// recv content_length from sock into buffer
 	char buffer[content_length + 1];
@@ -125,6 +128,8 @@ route_get_all_posts (int sock, struct lal_request *request) {
 		return respond_500(sock, msg);
 	}
 
+	if ((err = common_middleware(sock, request))) { return err; }
+
 	if ((err = model_get_all_posts(connector, post_vector))) {
 		// bad
 		return respond_500(sock, "Failed to fetch posts.");
@@ -132,5 +137,3 @@ route_get_all_posts (int sock, struct lal_request *request) {
 
 	return respond_with_posts(sock, post_vector);
 }
-
-

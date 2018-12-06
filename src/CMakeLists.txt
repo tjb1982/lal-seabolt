@@ -1,5 +1,6 @@
 set(SOURCE
     "main.cpp"
+    "utils.cpp"
     "log.cpp"
     ${CMAKE_CURRENT_SOURCE_DIR}/routes/common.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/routes/post.cpp
