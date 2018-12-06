@@ -17,6 +17,8 @@ BoltConnector *
 db_up(int argc, char **argv) {
 	const char *username = getenv_or_default("DB_USERNAME", "neo4j");
 	const char *password = getenv_or_default("DB_PASSWORD", "password");
+	const char *dbhost = getenv_or_default("DB_HOST", "localhost");
+	const char *dbport = getenv_or_default("DB_PORT", "7687");
 
 	Bolt_startup();
 
@@ -29,7 +31,7 @@ db_up(int argc, char **argv) {
 	BoltConfig_set_log(config, log);
 
 	struct BoltValue *auth_token = BoltAuth_basic(username, password, NULL);
-	struct BoltAddress *address = BoltAddress_create((char*) "localhost", (char*) "7687");
+	struct BoltAddress *address = BoltAddress_create(dbhost, dbport);
 
 	BoltConnector *connector = BoltConnector_create(address, auth_token, config);
 
@@ -53,8 +55,10 @@ int
 main(int argc, char **argv)
 {
 	struct lal_route *routes;
-	const char *host = --argc ? *argv++ : "localhost";
-	const char *port = argc-- ? *argv++ : "5000";
+	const char *host = --argc ? *++argv : "localhost";
+	const char *port = --argc ? *++argv : "5000";
+
+printf("%s: %s\n", host, port);
 
 	setenv("TZ", "UTC", 1);
 

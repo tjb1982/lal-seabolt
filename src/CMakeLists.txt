@@ -14,17 +14,21 @@ add_executable(lal-seabolt
     ${SOURCE}
 )
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+
 find_library(BOLT seabolt17 PATHS "${PROJECT_SOURCE_DIR}/lib64")
 
 include_directories(
     "${PROJECT_SOURCE_DIR}/include"
     "${PROJECT_SOURCE_DIR}/include/seabolt17"
 )
-
 target_link_libraries(
     ${PROJECT_NAME}
     lal
     uuid
-    pqxx
+    Threads::Threads
+    ssl
+    crypto
     ${BOLT}
 )

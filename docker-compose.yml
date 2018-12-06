@@ -1,0 +1,51 @@
+version: '2.1'
+services:
+  neo4j-server:
+    image: neo4j:3.5.0
+    expose:
+    - &bolt-port 7687
+    - &http-port 7474
+    - &https-port 7473
+    ports:
+    - 7687:7687
+    - 7474:7474
+    environment:
+      NEO4J_AUTH: neo4j/password
+      NEO4J_dbms_connector_bolt_listen__address: ":7687"
+      NEO4J_dbms_connector_http_listen__address: ":7474"
+      NEO4J_dbms_connector_https_listen__address: ":7473"
+      NEO4J_dbms_connectors_default__listen__address: "::"
+    networks:
+      lal_net:
+        ipv6_address: &server-address 2001:3200:3201::20
+
+  lal_seabolt:
+    build: .
+    depends_on: [neo4j-server]
+    ports:
+    - 5000:5000
+    command: |
+      bash -c "
+          while ! curl -s -o /dev/null -w \"%{http_code}\" -I http://neo4j-server:7474/
+          do
+              sleep 1;
+          done
+          echo ready
+          ./bin/lal-seabolt '::'
+      "
+    environment:
+      DB_HOST: neo4j-server
+      DB_PORT: 7687
+    networks:
+      lal_net:
+        ipv6_address: 2001:3200:3201::21
+
+networks:
+  lal_net:
+    enable_ipv6: true
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 2001:3200:3201::/64
+        gateway: 2001:3200:3201::1
