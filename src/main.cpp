@@ -1,22 +1,11 @@
 #include <stdio.h>
-#include <time.h>
 #include <lal/route.h>
-#include <lal/request.h>
-#include <lal/response.h>
 #include <lal/network.h>
-#include <lal/log.h>
-#include <string>
-#include <sstream>
-#include <iostream>
-#include <iomanip>
 
 #include "bolt/bolt.h"
-#include "bolt/lifecycle.h"
-#include "bolt/values.h"
 
 #include "log.hpp"
 #include "utils.hpp"
-#include "routes/common.hpp"
 #include "routes/post.hpp"
 
 #define QUOTE(...) #__VA_ARGS__

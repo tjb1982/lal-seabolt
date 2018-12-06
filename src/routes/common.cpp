@@ -49,7 +49,6 @@ common_middleware(int sock, struct lal_request *request)
 	}
 	char accept[header->vallen + 1];
 	strncpy(accept, header->val, header->vallen);
-	log_warn(accept);
 	if (!strstr(accept, "*/*") && !strstr(accept, "application/json")) {
 		respond_json(sock, "406 Not Acceptable", "application/json must be acceptable.");
 		return 1;
